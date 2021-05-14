@@ -1,0 +1,234 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "data": {
+      "url": "https://gist.githubusercontent.com/carsonfarmer/9791524/raw/b27ca0d78d46a84664fe7ef709eed4f7621f7a25/irish-counties-segmentized.topojson",
+      "format": {
+        "type": "topojson",
+        "feature": "counties"
+      }
+    },
+    "title": {
+      "text": "Exploring Irish Accommodations",
+      "fontSize": 28,
+      "align": "left"
+    },
+    "vconcat": [
+      {
+        "hconcat": [
+          {
+            "width": 600,
+            "height": 900,
+            "projection": {
+              "type": "conicConformal"
+            },
+            "layer": [
+              {
+                "mark": {
+                  "type": "geoshape",
+                  "stroke": "white",
+                  "fill": "#c5c5c5"
+                }
+              },
+              {
+                "data": {
+                  "url": "https://raw.githubusercontent.com/colmr/vis_class/master/FakeAccomodationDetails.csv",
+                  "format": {
+                    "type": "csv"
+                  }
+                },
+                "transform": [
+                  {
+                    "calculate": "datum.Url",
+                    "as": "url"
+                  },
+                  {
+                    "filter": {
+                      "param": "click"
+                    }
+                  },
+                  {
+                    "filter": {
+                      "param": "brush"
+                    }
+                  }
+                ],
+                "params": [
+                  {
+                    "name": "Cont",
+                    "select": {
+                      "type": "point",
+                      "fields": [
+                        "Type"
+                      ]
+                    },
+                    "bind": "legend"
+                  }
+                ],
+                "mark": "circle",
+                "encoding": {
+                  "longitude": {
+                    "field": "Longitude",
+                    "type": "quantitative"
+                  },
+                  "latitude": {
+                    "field": "Latitude",
+                    "type": "quantitative"
+                  },
+                  "color": {
+                    "field": "Type",
+                    "type": "nominal"
+                  },
+                  "opacity": {
+                    "condition": {
+                      "param": "Cont",
+                      "value": 1
+                    },
+                    "value": 0
+                  },
+                  "tooltip": [
+                    {
+                      "field": "Name",
+                      "type": "nominal"
+                    },
+                    {
+                      "field": "Type",
+                      "type": "nominal"
+                    },
+                    {
+                      "field": "Telephone",
+                      "type": "nominal"
+                    }
+                  ],
+                  "href": {
+                    "field": "url",
+                    "type": "nominal"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "data": {
+              "url": "https://raw.githubusercontent.com/colmr/vis_class/master/FakeAccomodationDetails.csv",
+              "format": {
+                "type": "csv"
+              }
+            },
+            "params": [
+              {
+                "name": "click",
+                "select": {
+                  "type": "point",
+                  "fields": [
+                    "AddressRegion"
+                  ]
+                },
+                "bind": "scales"
+              }
+            ],
+            "transform": [
+              {
+                "filter": {
+                  "param": "Cont"
+                }
+              },
+              {
+                "filter": {
+                  "param": "brush"
+                }
+              }
+            ],
+            "mark": "bar",
+            "height": 900,
+            "width": 250,
+            "encoding": {
+              "x": {
+                "aggregate": "count",
+                "type": "quantitative",
+                "axis": {
+                  "title": "Total Accomodations",
+                  "titleFontSize": 20,
+                  "labelFontSize": 15
+                }
+              },
+              "y": {
+                "field": "AddressRegion",
+                "type": "nominal",
+                "sort": "-x",
+                "axis": {
+                  "title": "",
+                  "labelFontSize": 15
+                }
+              },
+              "color": {
+                "field": "Type",
+                "type": "nominal"
+              },
+              "opacity": {
+                "condition": {
+                  "param": "click",
+                  "value": 0.8
+                },
+                "value": 0.2
+              }
+            }
+          }
+        ]
+      },
+      {
+        "data": {
+          "url": "https://raw.githubusercontent.com/colmr/vis_class/master/FakeAccomodationDetails.csv",
+          "format": {
+            "type": "csv"
+          }
+        },
+        "transform": [
+          {
+            "filter": {
+              "param": "Cont"
+            }
+          },
+          {
+            "filter": {
+              "param": "click"
+            }
+          }
+        ],
+        "params": [
+          {
+            "name": "brush",
+            "select": {
+              "type": "interval",
+              "encodings": [
+                "x"
+              ]
+            }
+          }
+        ],
+        "mark": "tick",
+        "width": 1000,
+        "encoding": {
+          "x": {
+            "field": "Capacity",
+            "type": "quantitative"
+          },
+          "color": {
+            "condition": {
+              "param": "brush",
+              "field": "Type",
+              "type": "nominal"
+            },
+            "value": "lightgrey"
+          }
+        }
+      }
+    ],
+    "config": {
+      "legend": {
+        "orient": "top-left",
+        "symbolLimit": 5,
+        "titleFontSize": 20,
+        "labelFontSize": 15
+      }
+    }
+  }
