@@ -1,0 +1,164 @@
+<html>
+   <head>
+      <title> Kevin Lalor - Exploration & Communication Assignment</title>
+<script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+      <style>
+         body {
+         font-family: sans-serif;
+         }
+      </style>
+   </head>
+   <body>
+      <table style="width: 850px;" cellspacing="5" cellpadding="5">
+         <tbody>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Name:&nbsp;</strong></td>
+               <td style="vertical-align: top;">Kevin Lalor</td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Student Number:</strong></td>
+               <td style="vertical-align: top;">17394071</td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Dataset description:</strong></td>
+               <td style="vertical-align: top;"> 
+               <p><a href="https://github.com/KevinLalor/csv_dump/blob/main/2019.csv">Countries Happiness Score Dataset</a></p>
+               <p>This data set contains the World Happiness Ranking, I have also added the Continent to which all the countries belong too. 
+                  Other information provided include country name, Score, GDP per capita, healthy life expectancy, freedom to make life choices,
+                  generosity and perceptions of corruption.</p>
+               </td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Initial questions</strong></td>
+               <td style="vertical-align: top;">How does GDP per capita and Healty life expectancy vary between countries and Continents? 
+               What is the relationship between these two attributes? How do the other attributes affect happiness score and overall ranking? Is there trends in attributes in certain continents?</td>
+            </tr>
+         </tbody>
+      </table>
+      <hr />
+      <div id="vis"></div>
+      <hr />
+      <table style="width: 850px;" cellspacing="5" cellpadding="5">
+         <tbody>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Description:&nbsp;</strong></td>
+               <td style="vertical-align: top;">These two strip charts show the GDP per capita and happiness score of countries in different continents. Each mark represents an individual
+              country, darker marks indicate multiple countries at that score or GDP rating stacked on eachother. The red dot represents the mean GDP and happiness score respectfully.
+              Hovering over a mark will give you the name of the country the mark represents, it's GDP and happiness score.</td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Insight:</strong></td>
+               <td style="vertical-align: top;">The charts are quite spread out for both score and GDP within the continents. The continents have quite a difference between the best
+                and worst country in terms of happiness and GDP. We see Oceania having only two values as the dataset only included New Zealand and Australia and not other countries and 
+                regions in Oceania.
+               <p>
+                We also see close clumps of countries, these countries seem to be ones close to eachother or ones with shared culture such as the United Kingdom and Ireland, or the 
+                Nordics, although this is not always true.
+               </p>
+            
+            
+               </td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Design considerations</strong></td>
+               <td style="vertical-align: top;">I used strip charts as positions along a common axis is an effective way of conveying quantitative data. By grouping countires according
+                to the the continent they're in and sorting according to average score and GDP we can see trends that exist in cultures in those continents. This obvious when we look at
+                Oceania or Europe for example. It also lets us see outliers in these continents and we can begin to ask why this is the case.
+               <p>
+                Issues with this plot is that it suffers from overplotting. I reduced this issue by knowing my dataset well (only 156 countires overall), and by setting opacity to 0.3,
+                so the marks that are darker blue indicate multiple countries at the same value. This adds some limitation as you can not identify every country by hovering over the marks
+                if they are on top of eachother but, the trends I want to show are still apparent.                  
+               </p>
+               <p>
+                Alternative plots of distribution such as, box plots or histograms, could make a similar point but with only a limited amount of continents and only one hundred and fifty six
+                countries they wouldn't be as effective. Another tool to deal with overplotting is binning. Binning wouldn't work with my visualisation as I'm using continents on the Y-Axis.
+                This would mean every country of one continent would fall into a single bin.
+               </p>
+            </td>
+            </tr>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Data filtering and transformation:&nbsp;</strong></td>
+               <td style="vertical-align: top;">Only countries with GDP per capita greater than zero are shown. Also each Continent attribute is indexed with a comma.</td>
+            </tr>
+         </tbody>
+      </table>
+      <script type="text/javascript">
+        var yourVlSpec =  {
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "data": {
+              "url": "https://raw.githubusercontent.com/KevinLalor/csv_dump/main/2019.csv",
+              "format": {"type": "csv"}
+            },
+            "transform": [
+              {"filter": "datum.GDP_per_capita > 0"},
+              {"filter": "indexof(datum.Continent, ',') < 0"}
+            ],
+            
+            "repeat": {"column": ["GDP_per_capita", "Score"]},
+            "title": {
+              "text": "GDP and Score of Happiness of Countries, with Median",
+              "anchor": "middle",
+              "fontSize": 20,
+              "offset": 20
+            },
+            "spec": {
+              "layer":[{
+              "mark": "tick",
+              "width": 300,
+              "encoding": {
+                "y": {
+                  "field": "Continent",
+                  "type": "nominal",
+                  "sort": {"op": "mean", "field": "Score", "order": "descending"},
+                  "axis": {"title": null}
+                },
+                "x": {
+                  "field": {"repeat": "column"},
+                  "type": "quantitative",
+                  "scale": {"zero": false}
+                },
+                "color": {"value": "DarkSlateBlue"},
+                "opacity": {"value": 0.3},
+
+                "tooltip": [
+                  {"field": "Country", "type": "nominal"},
+                  {"field": "GDP_per_capita", "type": "quantitative"},
+                  {"field": "Score", "type": "quantitative"}
+                ]
+                
+              }},
+              {
+                "mark": "circle",
+            "encoding": {
+              "y": {
+                "field": "Continent",
+                "type": "nominal",
+                "sort": {"op": "mean", "field": "Score", "order": "descending"}
+              },
+              "x": {
+                "field":  {"repeat": "column"},
+                "type": "quantitative",
+                "aggregate": "mean",
+                "scale": {"zero": false}
+              },
+              "color": {
+                    "value": "red"
+                  }
+              }
+              }]
+            },
+            "config": {
+              "legend": {
+                "orient": "bottom-right",
+                "titleFontSize": 14,
+                "labelFontSize": 20
+              },
+              "axis": {"titleFontSize": 16, "titlePadding": 10, "labelFontSize": 14}
+            }
+          }
+            vegaEmbed("#vis", yourVlSpec);
+      </script>
+   </body>
+</html>

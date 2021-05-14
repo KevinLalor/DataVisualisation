@@ -1,0 +1,143 @@
+<html>
+   <head>
+      <title> Kevin Lalor - Exploration & Communication Assignment</title>
+<script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+      <style>
+         body {
+         font-family: sans-serif;
+         }
+      </style>
+   </head>
+   <body>
+      <table style="width: 850px;" cellspacing="5" cellpadding="5">
+         <tbody>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Name:&nbsp;</strong></td>
+               <td style="vertical-align: top;">Kevin Lalor</td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Student Number:</strong></td>
+               <td style="vertical-align: top;">17394071</td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Dataset description:</strong></td>
+               <td style="vertical-align: top;"> 
+               <p><a href="https://github.com/KevinLalor/csv_dump/blob/main/2019.csv">Countries Happiness Score Dataset</a></p>
+               <p>This data set contains the World Happiness Ranking, I have also added the Continent to which all the countries belong too. 
+                  Other information provided include country name, Score, GDP per capita, healthy life expectancy, freedom to make life choices,
+                  generosity and perceptions of corruption.</p>
+               </td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Initial questions</strong></td>
+               <td style="vertical-align: top;">How does GDP per capita and Healty life expectancy vary between countries and Continents? 
+               What is the relationship between these two attributes? How do the other attributes affect happiness score and overall ranking? Is there trends in attributes in certain continents?</td>
+            </tr>
+         </tbody>
+      </table>
+      <hr />
+      <div id="vis"></div>
+      <hr />
+      <table style="width: 850px;" cellspacing="5" cellpadding="5">
+         <tbody>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Description:&nbsp;</strong></td>
+               <td style="vertical-align: top;">These six bar charts show the average happiness score, GDP per capita, healthy life expectancy, freedom to make life choices,
+              generosity and perceptions of corruption. Each bar chart is sorted from maximum to minimum for each attribute. If you hover over a continent it gets highlighted
+              over all six of the graphs.</td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Insight:</strong></td>
+               <td style="vertical-align: top;">In the score barchart we see a trend that we expect from continent to continent. The continents such as Europe and Oceania
+                are on the top with North America, and South America, Asia and Africa at the bottom. However, when we highlight each continent we see some interesting trends,
+                such as Africa having the fourth highest mean generosity of all the continents despite being at the bottom of every other attribute. Since we only have two
+                countries in Oceania in the dataset (the two biggest countries), we see that they top the board in this bar chart comparison as it is an average of all the 
+                countires in each continent. This leads to some unfair bias as there are many smaller regions and countries in that area that are omitted from the data.
+               <p>
+                Many insights can be drawn from this bar chart series including the low average freedom to make life choices in Europe and many more.
+               </p>
+            
+            
+               </td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Design considerations</strong></td>
+               <td style="vertical-align: top;">I have used bar charts as they are effective at conveying quantitative information. By sorting the continents based on the
+                average values of each attribute the effective use of these charts are increased. For example, it's immediately evident which continent tops or bottoms
+                their score in a certain attribute i.e. Africa with bottom GDP per capita. Also, the highlight feature I added on hover allows you to easily compare a 
+                continent over all the six attributes.
+               <p>
+                 Another design concept I considered was to have a dropbox, in which you choose what continent you would like to inspect. Once you chose a continent it would
+                 move it to the top of the chart and place the other ones underneath in any order. An issue with this approach is that it would not be sorted per attribute which
+                 would require the reader to put in more effort to compare the continents in all six of the graphs as they are not sorted. This is why I instead chose to use a 
+                 sorted bar chart based on the attribute the bar chart was investigating. Alongside a highlight function so the reader can see how a continent does over all the 
+                 six attributes.
+               </p>
+            </td>
+            </tr>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Data filtering and transformation:&nbsp;</strong></td>
+               <td style="vertical-align: top;">Only countries with GDP per capita, score and healthy life expectancy greater than zero are shown. Also each Continent attribute is indexed with a comma.</td>
+            </tr>
+         </tbody>
+      </table>
+      <script type="text/javascript">
+        var yourVlSpec =  {
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "data": {
+              "url": "https://raw.githubusercontent.com/KevinLalor/csv_dump/main/2019.csv",
+              "format": {"type": "csv"}
+            },
+            "transform": [
+              {"filter": "datum.Score > 0"},
+              {"filter": "datum.GDP_per_capita > 0"},
+              {"filter": "datum.Healthy_life_expectancy > 0"},
+              {"filter": "indexof(datum.Continent, ',') < 0"}
+            ],
+            "params": [
+              {
+                "name": "highlight",
+                "select": {"type": "point", "on": "mouseover"}
+              },
+              {"name": "select", "select": "point"}
+            ],
+            "repeat": {
+              "column": ["Score", "GDP_per_capita", "Healthy_life_expectancy","Freedom_to_make_life_choices", "Generosity",   "Perceptions_of_corruption"]
+              },
+            "spec": {
+              "mark": {
+                "type": "bar",
+                "stroke": "black"
+              },
+              "encoding": {
+                "y": {
+                  "field": "Continent",
+                  "type": "nominal",
+                  "axis": {"title": null},
+                  "sort": {
+                    "op": "mean",
+                    "field": {"repeat": "column"},
+                    "order": "descending"
+                  }
+                },
+                "x": {
+                  "field": {"repeat": "column"},
+                  "type": "quantitative",
+                  "aggregate": "mean"
+                },
+                "color": {
+                  "condition": {
+                    "param": "highlight",
+                    "value": "#5ba3cf"
+                  },
+                  "value": "grey"
+                }
+              }
+            }
+          }
+            vegaEmbed("#vis", yourVlSpec);
+      </script>
+   </body>
+</html>

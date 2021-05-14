@@ -1,0 +1,168 @@
+<html>
+   <head>
+      <title> Kevin Lalor - Exploration & Communication Assignment</title>
+<script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+      <style>
+         body {
+         font-family: sans-serif;
+         }
+      </style>
+   </head>
+   <body>
+      <table style="width: 850px;" cellspacing="5" cellpadding="5">
+         <tbody>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Name:&nbsp;</strong></td>
+               <td style="vertical-align: top;">Kevin Lalor</td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Student Number:</strong></td>
+               <td style="vertical-align: top;">17394071</td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Dataset description:</strong></td>
+               <td style="vertical-align: top;"> 
+               <p><a href="https://github.com/KevinLalor/csv_dump/blob/main/2019.csv">Countries Happiness Score Dataset</a></p>
+               <p>This data set contains the World Happiness Ranking, I have also added the Continent to which all the countries belong too. 
+                  Other information provided include country name, Score, GDP per capita, healthy life expectancy, freedom to make life choices,
+                  generosity and perceptions of corruption.</p>
+               </td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Initial questions</strong></td>
+               <td style="vertical-align: top;">How does GDP per capita and Healty life expectancy vary between countries and Continents? 
+               What is the relationship between these two attributes? How do the other attributes affect happiness score and overall ranking? Is there trends in attributes in certain continents?</td>
+            </tr>
+         </tbody>
+      </table>
+      <hr />
+      <div id="vis"></div>
+      <hr />
+      <table style="width: 850px;" cellspacing="5" cellpadding="5">
+         <tbody>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Description:&nbsp;</strong></td>
+               <td style="vertical-align: top;">This scatterplot shows the relationship between the healthy life expectancy and GDP per capita of a country.
+               Each point represents a country and these are coloured according to the continent the country is in. Hovering over these points will show you
+               the name of the country the point represents and the actual number of its healthy life expectancy and GDP per capita. Clicking on a continent
+               in the legend will highlight all the countries in that continent and lower the opacity of the other points that belong to the other continents.</td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Insight:</strong></td>
+               <td style="vertical-align: top;">There is a clear correlation between healty life expectancy and GDP per capita. In general, countries and continents
+               we expect to be healthier and richer tend to be higher up (first world countires), while third world countries tend to be towards the bottom-left.
+               Surprisingly, when we filter the continents we see some countries in continents we expect to be poorer and less healthy such as Africa doing quite well,
+               and the contrast is seen in continents we expect to do well such as Europe, where we have some countries not doing so well. By far the most spaced out 
+               continent is Asia.
+               <p>There is one extreme outlier in the dataset with a zero for healthy life expectancy. This would seem to be an error in the dataset in which the
+                  country didn't send in that list of data, and which passed my filter as it had a GDP per capita value. We can see that this country is Swaziland
+                  when we hover over the data point.
+               </p>
+            
+            
+               </td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Design considerations</strong></td>
+               <td style="vertical-align: top;">To display the relationship between two quantitative variables, I decided that a scatterplot would be effective.
+               This takes advantage of people's ability to percieve variation on the horizontal and vertical axis. I used a standard color scheme from the vega-lite
+               library called, "category 10" as I knew I only needed a few strong colours to represent the continents. I also added a tooltip for country name,
+               healthy life expectancy, and GDP per capita for each data point.
+            
+               <p>The chart didn't ditinguish between the countries very well so I looked into solutions. One solution I found was to change the size of the points
+                  based on popluation. However, the dataset didn't have this information, also, I wanted the graph to focus on the trend in every country, and not to 
+                  focus on the name or perception of countries based on size or popluation.
+                  Another issue was overplotting. To combat this I changed the opacity levels to make it easier to identify different points. I also added an interactive
+                  legend, this allows you to focus on one continent by changing the opacity of the other points belonging to other continents to 0.2. This was a good solution
+                  as I wanted to keep the same graph as other didn't portray my data as well i.e. bar charts / heatmaps.
+               </p>
+            </td>
+            </tr>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Data filtering and transformation:&nbsp;</strong></td>
+               <td style="vertical-align: top;">Only countries with GDP per capita greater than zero are shown.</td>
+            </tr>
+         </tbody>
+      </table>
+      <script type="text/javascript">
+        var yourVlSpec =  {
+         "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "data": {
+               "url": "https://raw.githubusercontent.com/KevinLalor/csv_dump/main/2019.csv",
+               "format": {"type": "csv"}
+            },
+            
+            "title": {
+               "text": "World Happiness 2019 - Healthy Life Expectancy vs GDP",
+               "anchor": "middle",
+               "fontSize": 24,
+               "offset": 20
+            },
+            "width": 500,
+            "height": 500,
+            "transform": [
+               {
+                  "filter":"datum.GDP_per_capita > 0"
+               }
+            ],
+            "params": [{
+               "name": "Cont",
+               "select": {
+                  "type": "point", 
+                  "fields": ["Continent"]
+                  },
+               "bind": "legend"
+               }
+            ],
+            "mark": {"type": "point", "filled": true},
+            "encoding": {
+               "y": {
+                  "title": "Healthy Life Expectancy",
+                  "field": "Healthy_life_expectancy",
+                  "type": "quantitative",
+                  "scale": {"zero": false},
+                  "axis": {"grid": false}
+               },
+               "x": {
+                  "title": "GDP per capita",
+                  "field": "GDP_per_capita",
+                  "type": "quantitative",
+                  "scale": {"zero": false},
+                  "axis": {"grid": false}
+               },
+               "color": {
+                  "field": "Continent",
+                  "type": "nominal",
+                  "scale": {"scheme": "category10"}
+               },
+               "size": {
+                  "value": 30
+               },
+               "opacity": {
+                  "condition": {
+                  "param": "Cont", 
+                  "value": 0.8
+                  },
+                  "value": 0.2
+               },
+               "tooltip": [
+                  {"field": "Country", "type": "nominal"},
+                  {"field": "Healthy_life_expectancy", "type": "quantitative"},
+                  {"field": "GDP_per_capita", "type": "quantitative"}
+
+               ]
+            },
+            "config": {
+               "axis": {
+                  "titleFontSize": 24, 
+                  "titlePadding": 10,      
+                  "labelFontSize": 20
+               }
+            }
+         }  
+            vegaEmbed("#vis", yourVlSpec);
+      </script>
+   </body>
+</html>
